@@ -19,9 +19,6 @@
                 setIndicator(this, workOutDirection(this));
             });
             elevator.on("stopped_at_floor", function(floorNum) {
-                elevator.goToFloor(floorNum, true);
-                elevator.goToFloor(floorNum, true);
-                elevator.goToFloor(floorNum, true);
                 var direction = workOutDirection(this);
                 removeFromFloorQueue(floorNum, direction);
                 whereNext(this, floorNum);
