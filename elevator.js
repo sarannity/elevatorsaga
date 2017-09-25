@@ -26,7 +26,14 @@
             });
             elevator.on("passing_floor", function(floorNum, dir) {
                 var direction = workOutDirection(this);
-                decideWhetherToStop(elevator, floorNum, direction);
+                if (this.loadFactor() < 0.8) {
+                    if (direction == "up" && upFloorQueue.includes(floorNum)) {
+                        this.goToFloor(floorNum, true);
+                    }
+                    if (direction == "down" && downFloorQueue.includes(floorNum)) {
+                        this.goToFloor(floorNum, true);
+                    }
+                }
             });
             elevator.on("idle", function() {
                 whereNext(this, this.currentFloor());
@@ -73,11 +80,14 @@
             return function(a, b) {
                 if (a > currentFloor && b > currentFloor & a > b) {
                     return -1;
-                } if (a > currentFloor && b > currentFloor & a < b) {
+                }
+                if (a > currentFloor && b > currentFloor & a < b) {
                     return 0;
-                } if (a < currentFloor && a < b) {
+                }
+                if (a < currentFloor && a < b) {
                     return 1;
-                } if (a < currentFloor && a > b) {
+                }
+                if (a < currentFloor && a > b) {
                     return 0;
                 }
                 return 0;
@@ -86,6 +96,12 @@
 
         function sortFloorQueue(currentFloor) {
 
+        }
+
+        function removeFloorsFromQueue(floorNum, queue) {
+            return queue.filter(function(item) {
+                return item !== floorNum
+            });
         }
 
         function removeFromFloorQueue(floorNum, direction) {
@@ -139,17 +155,6 @@
                     elevator.destinationQueue.push(0);
                 }
                 elevator.checkDestinationQueue();
-            }
-        }
-
-        function decideWhetherToStop(elevator, floorNum, direction) {
-            if (elevator.loadFactor() < 0.8) {
-                if (direction == "up" && upFloorQueue.includes(floorNum)) {
-                    elevator.goToFloor(floorNum, true);
-                }
-                if (direction == "down" && downFloorQueue.includes(floorNum)) {
-                    elevator.goToFloor(floorNum, true);
-                }
             }
         }
     },
